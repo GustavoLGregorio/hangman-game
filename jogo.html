@@ -4,13 +4,19 @@
         <meta charset="UTF-8">
         <title>Jogo da Forca</title>
         <link rel="shortcut icon" href="content/favicon/icons8-pilar-grego-capital-96.png" type="image/x-icon">
-        <link rel="stylesheet" href="jogo.css">
+        <link rel="stylesheet" href="style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <script src="app.js" defer></script>
+
     </head>
     <body id="jogo">
+        <div>
+            <button id="voltar" type="button">&#8249;</button>
+            <span class="score"></span>
+        </div>
+
         <header>
-            <h2>Tem <span id="tamanho_palavra"></span> letras e é um objeto</h2>
+            <h2>Tem <span id="tamanho_palavra"></span> letras e é um <span id="tipo_palavra"></span></h2>
         </header>
         <main>
             <div id="hangman">
@@ -89,10 +95,5 @@
                 -->
             </div>
         </main>
-
-        <div>
-            <button id="voltar" type="button"><-</button>
-            <span class="score"></span>
-        </div>
     </body>
 </html>

@@ -143,6 +143,7 @@ main {
 .pop {
     animation: pop 500ms ease-in-out;
 }
+
 #espaco_letras {
     font-size: 2rem;
     font-family: monospace;

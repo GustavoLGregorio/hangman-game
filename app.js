@@ -27,6 +27,38 @@ let animais = ["gato", "cachorro", "leão"]
 let objetos = ["cadeira", "mesa", "celular"]
 let palavras = [animais, objetos]
 
+// criação de numeros aleatorios que correspondem a palavra da forca
+const rand_item = Math.ceil(Math.random() * (animais.length + objetos.length))
+
+async function carregar_palavras() {
+    try {
+      const resposta = await fetch('palavras.json');
+      const dados = await resposta.json();
+  
+      // Colocando os valores de cada categoria em arrays separados
+      const animais = dados.animais;
+      const objetos = dados.objetos;
+      const paises = dados.paises;
+      const filmes = dados.filmes;
+  
+      // Aqui você pode retornar ou manipular os arrays conforme a lógica da sua aplicação
+      return { animais, objetos, paises, filmes };
+
+    } catch (erro) {
+      console.error('Erro ao carregar o arquivo .json:', erro);
+    }
+  }
+  
+  // Chamando a função e utilizando os arrays
+  carregar_palavras().then(({ animais, objetos, paises, filmes }) => {
+    // Agora você pode usar os arrays como quiser
+    console.log('Lista de animais:', animais);
+    console.log('Lista de objetos:', objetos);
+    console.log('Lista de países:', paises);
+    console.log('Lista de filmes:', filmes);
+  });
+
+
 // containers (elementos html) que interagem entre a pagina inicial e o jogo
 const container_botoes = document.getElementById("container_botoes")
 const container_highscore = document.querySelector(".highscore")
@@ -67,9 +99,9 @@ let score_pode_mudar = true
 // incrementa o score quando chamado (chamado na pagina_jogo())
 function incrementar_score() {
     // incrementa o score a cada palavra correta
-    if ((v_dificuldade == "Normal" && score_pode_mudar == true) || (v_dificuldade == "" && score_pode_mudar == true)) {
+    if ((v_dificuldade == "NORMAL" && score_pode_mudar == true) || (v_dificuldade == "" && score_pode_mudar == true)) {
         v_score += 1
-    } else if (v_dificuldade == "Difícil" && score_pode_mudar == true) {
+    } else if (v_dificuldade == "DIFÍCIL" && score_pode_mudar == true) {
         v_score += 5
     }
 
@@ -87,7 +119,10 @@ function incrementar_score() {
  *
 **/
 // reconhece qual a url onde o usuario está
-if (location.href == "http://192.168.1.2:5500/index.html" || location.href == "http://192.168.1.2:5500/") {
+if (location.href == "http://192.168.1.2:5501/pages/jogo_da_forca/index.html" ||
+    location.href == "http://192.168.1.2:5501/pages/jogo_da_forca/" ||
+    location.href == "https://gustavolgregorio.github.io/pages/jogo_da_forca/index.html" ||
+    location.href == "https://gustavolgregorio.github.io/pages/jogo_da_forca/") {
     // inicia a função principal da pagina inicial
     pagina_inicial()
 
@@ -99,11 +134,12 @@ if (location.href == "http://192.168.1.2:5500/index.html" || location.href == "h
     // mostra o highscore na pagina inicial
     container_highscore.innerText = `Highscore: ${v_highscore}`
 }
-if (location.href == "http://192.168.1.2:5500/jogo.html") {
+if (location.href == "http://192.168.1.2:5501/pages/jogo_da_forca/jogo.html" ||
+    location.href == "https://gustavolgregorio.github.io/pages/jogo_da_forca/jogo.html") {
     // checa a dificuldade e cria o jogo com 6 ou 3 tentativas
-    if (v_dificuldade == "Normal" || v_dificuldade == "") {
+    if (v_dificuldade == "NORMAL" || v_dificuldade == "") {
         pagina_jogo(6)
-    } else if (v_dificuldade == "Difícil") {
+    } else if (v_dificuldade == "DIFÍCIL") {
         pagina_jogo(3)
     }
 
@@ -122,8 +158,6 @@ function pagina_inicial() {
     const botao_memoria = document.getElementById("memoria")
     const botao_continuar = document.getElementById("continuar")
     const botao_dificuldadde = document.getElementById("dificuldade")
-    // criação de numeros aleatorios que correspondem a palavra da forca
-    const rand_item = Math.ceil(Math.random() * 6)
 
     // click do botão "jogar"
     botao_novo_jogo.addEventListener("click", () => {
@@ -132,7 +166,7 @@ function pagina_inicial() {
         localStorage.setItem("iniciou_jogo", "true")
         localStorage.setItem(n_score, 0)
 
-        location.href = "/jogo.html"
+        location.href = "jogo.html"
     })
 
     // click apaga a memoria
@@ -150,20 +184,20 @@ function pagina_inicial() {
     if (botao_continuar.classList.contains("desativado") == false) {
         botao_dificuldadde.innerText = v_dificuldade
         botao_continuar.addEventListener("click", () => {
-            location.href = "/jogo.html"
+            location.href = "jogo.html"
         })
     }
 
     // reconhece o click do botão e alterna a dificuldade do jogo
     botao_dificuldadde.addEventListener("click", () => {
-        if (botao_dificuldadde.innerText == "Normal") {
-            botao_dificuldadde.innerText = "Difícil"
+        if (botao_dificuldadde.innerText == "NORMAL") {
+            botao_dificuldadde.innerText = "DIFÍCIL"
 
-            localStorage.setItem(n_dificuldade, "Difícil")
+            localStorage.setItem(n_dificuldade, "DIFÍCIL")
         } else {
-            botao_dificuldadde.innerText = "Normal"
+            botao_dificuldadde.innerText = "NORMAL"
 
-            localStorage.setItem(n_dificuldade, "Normal")
+            localStorage.setItem(n_dificuldade, "NORMAL")
         }
     })
     if (v_dificuldade == "") {
@@ -185,10 +219,11 @@ function pagina_jogo(tentativas = 6) {
     const hangman = document.getElementById("hangman")
     const pagina_jogo_div = pagina_jogo.appendChild(div)
     const botoes_alfabeto = document.getElementById("container_alfabeto").querySelectorAll("button")
+    const tipo_palavra = document.getElementById("tipo_palavra")
 
     // volta para a pagina inicial caso o jogador clique no botão (o score e palavra se mantem)
     botao_voltar.addEventListener("click", () => {
-        window.location.href = "/index.html"
+        window.location.href = "index.html"
     })
 
     // encontra qual conjunto (array) o index pertence
@@ -198,7 +233,7 @@ function pagina_jogo(tentativas = 6) {
 
     // caso o usuario tente forçar sua entrada na jogo.html antes de iniciar um jogo, será mandado para a index.html
     if (localStorage.getItem("iniciou_jogo") == null) {
-        location.href = "/index.html"
+        location.href = "index.html"
     }
 
     // checa o numero aleatorio gerado na sessão local, reconhece uma palavra dentro do array palavras[animais[], objetos[]]
@@ -208,10 +243,12 @@ function pagina_jogo(tentativas = 6) {
         if (palavra_index <= palavras[0].length) {
             i = palavra_index - 1
             palavra = palavras[0][i]
+            tipo_palavra.innerText = "Animal"
         }
         if (palavra_index > palavras[0].length) {
             i = (palavra_index - animais.length) - 1
             palavra = palavras[1][i]
+            tipo_palavra.innerText = "Objeto"
         }
         return palavra
     }
@@ -302,9 +339,9 @@ function pagina_jogo(tentativas = 6) {
                 pagina_jogo_div.classList.add("ganhou")
                 pagina_jogo_div.appendChild(h3).innerText = "Acertou!"
                 // mostra quantos pontos serão aumentados (em base de dificuldade)
-                if (v_dificuldade == "Normal" || v_dificuldade == "") {
+                if (v_dificuldade == "NORMAL" || v_dificuldade == "") {
                     pagina_jogo_div.appendChild(p).innerText = "+1 ponto"
-                } else if (v_dificuldade == "Difícil") {
+                } else if (v_dificuldade == "DIFÍCIL") {
                     pagina_jogo_div.appendChild(p).innerText = "+5 pontos"
                 }
 
@@ -315,6 +352,7 @@ function pagina_jogo(tentativas = 6) {
                     // escuta o evento de final de animação "fade_out"
                     pagina_jogo_div.addEventListener("animationend", () => {
                         pagina_jogo_div.remove()
+                        localStorage.setItem("rand_item", rand_item)
                         window.location.reload()
                     })
                 })
@@ -324,6 +362,11 @@ function pagina_jogo(tentativas = 6) {
                     localStorage.setItem(n_highscore, v_score)
                 }
             }
+
+            // zera o score atual (não altera o highscore)
+            if(tentativas <= 1 && v_score > 0) {
+                v_score -= v_score
+            }
             // reconhece se o jogador errou o maximo de vezes (perde o jogo)
             if (tentativas == 0) {
                 // remove o evento de escutar teclas (evita bugs no score)
@@ -332,17 +375,6 @@ function pagina_jogo(tentativas = 6) {
                 score_pode_mudar = false
                 // aciona a funçaõ que incrementa o score (para zerar os pontos)
                 incrementar_score()
-
-                // zera o score atual (não altera o highscore)
-                if (v_dificuldade == "Normal" || v_dificuldade == "") {
-                    if (v_score > 0) {
-                        v_score -= v_score
-                    }
-                } else if (v_dificuldade == "Difícil") {
-                    if (v_score > 0) {
-                        v_score -= v_score
-                    }
-                }
 
                 // cria a mensagem de derrota
                 pagina_jogo_div.classList.add("perdeu")
