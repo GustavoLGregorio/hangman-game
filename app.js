@@ -222,10 +222,7 @@ function incrementar_score() {
  *
  **/
 // reconhece qual a url onde o usuario está
-if (
-	location.pathname == "/pages/jogo_da_forca/index.html" ||
-	location.pathname == "/pages/jogo_da_forca/"
-) {
+if (location.pathname == "/index.html" || location.pathname == "/") {
 	// inicia a função principal da pagina inicial
 	pagina_inicial();
 
@@ -237,7 +234,7 @@ if (
 	// mostra o highscore na pagina inicial
 	container_highscore.innerText = `Highscore: ${v_highscore}`;
 }
-if (location.pathname == "/pages/jogo_da_forca/jogo.html") {
+if (location.pathname == "/jogo.html") {
 	// checa a dificuldade e cria o jogo com 6 ou 3 tentativas
 	if (v_dificuldade == "NORMAL" || v_dificuldade == "") {
 		pagina_jogo(6);
@@ -268,7 +265,7 @@ function pagina_inicial() {
 		localStorage.setItem("iniciou_jogo", "true");
 		localStorage.setItem(n_score, 0);
 
-		location.href = "jogo.html";
+		location.href = "/jogo.html";
 	});
 
 	// click apaga a memoria
@@ -326,7 +323,7 @@ function pagina_jogo(tentativas = 6) {
 
 	// volta para a pagina inicial caso o jogador clique no botão (o score e palavra se mantem)
 	botao_voltar.addEventListener("click", () => {
-		window.location.href = "index.html";
+		window.location.href = "/index.html";
 	});
 
 	// encontra qual conjunto (array) o index pertence
